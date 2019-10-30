@@ -1,0 +1,30 @@
+{
+  "name": "chloebot",
+  "version": "1.0.0",
+  "description": "discord bot for soulworker kr",
+  "main": "index.js",
+  "author": "Chenny",
+  "license": "MIT",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.2.0",
+    "cheerio": "^1.0.0-rc.3",
+    "compare-lists": "^1.0.9",
+    "discord.js": "^11.5.1",
+    "mocha": "^6.2.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "voca": "^1.4.0"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "scripts": {
+    "start": "babel-node index.js",
+    "test": "mocha --require babel-core/register"
+  }
+}
