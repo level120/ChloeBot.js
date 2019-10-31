@@ -6,4 +6,4 @@ RUN apt-get update && \
 
 WORKDIR /ChloeBot.js
 
-ENTRYPOINT ["/usr/bin/bash", "update.sh"]
+ENTRYPOINT ["bash", "update.sh"]
