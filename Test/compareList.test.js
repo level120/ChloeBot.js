@@ -102,4 +102,39 @@ describe('A compare-lists lib tests', () => {
         // then
         assert.deepEqual(actual, expect);
     });
+
+    /**
+     * 현재 파싱형태 확인
+     */
+    it('A real-type data', () => {
+        // given
+        const left_items = [
+            { title: 'a', url: 'a' },
+            { title: 'b', url: 'b' },
+            { title: 'c', url: 'c' },
+            { title: 'd', url: 'd' },
+            { title: 'e', url: 'e' }
+        ];
+        const right_items = [
+            { title: 'a', url: 'a' },
+            { title: 'b', url: 'b' },
+            { title: 'c', url: 'c' },
+            { title: 'd', url: 'd' },
+            { title: 'e', url: 'e' },
+            { title: 'f', url: 'f' }
+        ];
+        const expect = [{ title: 'f', url: 'f' }];
+
+        // when
+        let actual = [];
+        compareLists({
+            left: left_items,
+            right: right_items,
+            compare: (left, right) => left.url.localeCompare(right.url),
+            onMissingInLeft: (right) => actual.push(right)
+        })
+
+        // then
+        assert.deepEqual(actual, expect);
+    });
 });

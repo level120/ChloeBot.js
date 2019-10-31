@@ -87,15 +87,15 @@ export default class Soulworker {
                         let notice_temp = [];
 
                         compareLists({
-                            left: this.notices_old.url,
-                            right: this.notices.url,
-                            compare: (left, right) => left.localeCompare(right),
+                            left: this.notices_old,
+                            right: this.notices,
+                            compare: (left, right) => left.url.localeCompare(right.url),
                             onMissingInLeft: (right) => notice_temp.push(right)
                         });
 
                         if (this.notices.length > 0 && this.notices_old.length > 0 && notice_temp.length > 0) {
-                            notice_temp.forEach((url) => {
-                                this.msg.sendMessage(url);
+                            notice_temp.forEach((item) => {
+                                this.msg.sendMessage(item.url);
                             });
                         }
 
@@ -107,15 +107,15 @@ export default class Soulworker {
                         let update_temp = [];
 
                         compareLists({
-                            left: this.updates_old.url,
-                            right: this.updates.url,
-                            compare: (left, right) => left.localeCompare(right),
+                            left: this.updates_old,
+                            right: this.updates,
+                            compare: (left, right) => left.url.localeCompare(right.url),
                             onMissingInLeft: (right) => update_temp.push(right)
                         });
 
                         if (this.updates.length > 0 && this.updates_old.length > 0 && update_temp.length > 0) {
-                            update_temp.forEach((url) => {
-                                this.msg.sendMessage(url);
+                            update_temp.forEach((item) => {
+                                this.msg.sendMessage(item.url);
                             });
                         }
 
@@ -127,15 +127,15 @@ export default class Soulworker {
                         let event_temp = [];
 
                         compareLists({
-                            left: this.events_old.imgUrl,
-                            right: this.events.imgUrl,
-                            compare: (left, right) => left.localeCompare(right),
+                            left: this.events_old,
+                            right: this.events,
+                            compare: (left, right) => left.imgUrl.localeCompare(right.imgUrl),
                             onMissingInLeft: (right) => event_temp.push(right)
                         });
 
                         if (this.events.length > 0 && this.events_old.length > 0 && event_temp.length > 0) {
-                            event_temp.forEach((imgUrl) => {
-                                this.msg.sendEmbedMessage(type, {url: this.eventUrl, imgUrl: imgUrl});
+                            event_temp.forEach((item) => {
+                                this.msg.sendEmbedMessage(type, {url: item.url, imgUrl: item.imgUrl});
                             });
                         }
 
@@ -147,15 +147,15 @@ export default class Soulworker {
                         let gm_magazines_temp = [];
 
                         compareLists({
-                            left: this.gm_magazines_old.url,
-                            right: this.gm_magazines.url,
-                            compare: (left, right) => left.localeCompare(right),
+                            left: this.gm_magazines_old,
+                            right: this.gm_magazines,
+                            compare: (left, right) => left.url.localeCompare(right.url),
                             onMissingInLeft: (right) => gm_magazines_temp.push(right)
                         });
 
                         if (this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0 && gm_magazines_temp.length > 0) {
-                            gm_magazines_temp.forEach((url) => {
-                                this.msg.sendMessage(url);
+                            gm_magazines_temp.forEach((item) => {
+                                this.msg.sendMessage(item.url);
                             });
                         }
 
