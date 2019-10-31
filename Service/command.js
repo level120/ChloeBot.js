@@ -21,7 +21,7 @@ export function registrationCommand(client) {
                 .setDescription(description.join(' '));
 
             const message = new Message(client);
-            message.sendEmbedMessage(embed);
+            message.sendMessage(embed);
         }
     });
 
