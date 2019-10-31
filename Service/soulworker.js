@@ -2,7 +2,7 @@ import request from 'request-promise';
 import cheerio from 'cheerio';
 import voca from 'voca';
 import { compareLists } from 'compare-lists';
-import { RichEmbed } from 'discord.js';
+import Message from './message';
 
 /**
  * Soulworker KR의 모니터링을 담당합니다
@@ -23,6 +23,8 @@ export default class Soulworker {
         this.updates = [];
         this.events = [];
         this.gm_magazines = [];
+
+        this.msg = new Message(client);
     }
 
     /**
@@ -85,14 +87,16 @@ export default class Soulworker {
                         let notice_temp = [];
 
                         compareLists({
-                            left: this.notices_old,
-                            right: this.notices,
+                            left: this.notices_old.url,
+                            right: this.notices.url,
                             compare: (left, right) => left.localeCompare(right),
                             onMissingInLeft: (right) => notice_temp.push(right)
                         });
 
                         if (this.notices.length > 0 && this.notices_old.length > 0 && notice_temp.length > 0) {
-                            this.sendEmbedMessage(type, notice_temp);
+                            notice_temp.forEach((url) => {
+                                this.msg.sendMessage(url);
+                            });
                         }
 
                         this.notices_old = this.notices;
@@ -103,14 +107,16 @@ export default class Soulworker {
                         let update_temp = [];
 
                         compareLists({
-                            left: this.updates_old,
-                            right: this.updates,
+                            left: this.updates_old.url,
+                            right: this.updates.url,
                             compare: (left, right) => left.localeCompare(right),
                             onMissingInLeft: (right) => update_temp.push(right)
                         });
 
                         if (this.updates.length > 0 && this.updates_old.length > 0 && update_temp.length > 0) {
-                            this.sendEmbedMessage(type, update_temp);
+                            update_temp.forEach((url) => {
+                                this.msg.sendMessage(url);
+                            });
                         }
 
                         this.updates_old = this.updates;
@@ -121,14 +127,16 @@ export default class Soulworker {
                         let event_temp = [];
 
                         compareLists({
-                            left: this.events_old,
-                            right: this.events,
+                            left: this.events_old.imgUrl,
+                            right: this.events.imgUrl,
                             compare: (left, right) => left.localeCompare(right),
                             onMissingInLeft: (right) => event_temp.push(right)
                         });
 
                         if (this.events.length > 0 && this.events_old.length > 0 && event_temp.length > 0) {
-                            this.sendEmbedMessage(type, event_temp);
+                            event_temp.forEach((imgUrl) => {
+                                this.msg.sendEmbedMessage(type, {url: this.eventUrl, imgUrl: imgUrl});
+                            });
                         }
 
                         this.events_old = this.events;
@@ -139,14 +147,16 @@ export default class Soulworker {
                         let gm_magazines_temp = [];
 
                         compareLists({
-                            left: this.gm_magazines_old,
-                            right: this.gm_magazines,
+                            left: this.gm_magazines_old.url,
+                            right: this.gm_magazines.url,
                             compare: (left, right) => left.localeCompare(right),
                             onMissingInLeft: (right) => gm_magazines_temp.push(right)
                         });
 
                         if (this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0 && gm_magazines_temp.length > 0) {
-                            this.sendEmbedMessage(type, gm_magazines_temp);
+                            gm_magazines_temp.forEach((url) => {
+                                this.msg.sendMessage(url);
+                            });
                         }
 
                         this.gm_magazines_old = this.gm_magazines;
@@ -155,44 +165,6 @@ export default class Soulworker {
                 });
             }
         }, 60000);
-    }
-
-    /**
-     * 데이터로부터 메세지를 만들고 봇이 가입된 전체 서버에 메세지를 보냅니다
-     * @param {string} type 게시판 유형
-     * @param {*} msgObj 전송할 메세지가 담긴 객체
-     */
-    sendEmbedMessage(type, msgObj) {
-        const msgEmbed = new RichEmbed()
-            .setTitle(msgObj.title)
-            .setUrl(msgObj.url)
-            .setColor(0xFF0000);
-
-        if (type === 'event') {
-            msgEmbed.setImage(msgObj.imgUrl);
-        }
-
-        // this.sendMessage(msgEmbed);
-        this.sendMessage(msgObj.url);
-    }
-
-    /**
-     * Bot이 가입된 전체 서버에 메세지를 보냅니다
-     * @param { object } msg string 또는 RichEmbed
-     */
-    sendMessage(msg) {
-        this.client.guilds.each((guild) => {
-            let defaultChannel = '';
-
-            guild.channels.each((channel) => {
-                if (channel.type === 'text' && defaultChannel === '' && channel.permissionFor(guild.me).has("SEND_MESSAGES")) {
-                    defaultChannel = channel;
-                }
-            });
-
-            defaultChannel.send(msg);
-            console.log(`${guild.name} - ${defaultChannel.name} is sended message`);
-        });
     }
 
     /**
