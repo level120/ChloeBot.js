@@ -1,4 +1,5 @@
 import { RichEmbed } from 'discord.js';
+import Message from './message';
 
 /**
  * bot의 명령어 집합입니다
@@ -19,7 +20,8 @@ export function registrationCommand(client) {
                 .setColor(0xFF0000)
                 .setDescription(description.join(' '));
 
-            msg.channel.send(embed);
+            const message = new Message(client);
+            message.sendEmbedMessage(embed);
         }
     });
 
