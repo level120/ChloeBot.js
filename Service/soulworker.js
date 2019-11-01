@@ -84,87 +84,71 @@ export default class Soulworker {
                     });
                 }).then(() => {
                     if (this.notices.length > 0) {
-                        let notice_temp = [];
-
                         compareLists({
                             left: this.notices_old,
                             right: this.notices,
                             compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (right) => notice_temp.push(right)
+                            onMissingInLeft: (item) => {
+                                if (this.notices.length > 0 && this.notices_old.length > 0) {
+                                    this.msg.sendMessage(item.url);
+                                }
+                            }
                         });
-
-                        if (this.notices.length > 0 && this.notices_old.length > 0 && notice_temp.length > 0) {
-                            notice_temp.forEach((item) => {
-                                this.msg.sendMessage(item.url);
-                            });
-                        }
 
                         this.notices_old = this.notices;
                         this.notices = [];
                     }
 
                     if (this.updates.length > 0) {
-                        let update_temp = [];
-
                         compareLists({
                             left: this.updates_old,
                             right: this.updates,
                             compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (right) => update_temp.push(right)
+                            onMissingInLeft: (item) => {
+                                if (this.updates.length > 0 && this.updates_old.length > 0) {
+                                    this.msg.sendMessage(item.url);
+                                }
+                            }
                         });
-
-                        if (this.updates.length > 0 && this.updates_old.length > 0 && update_temp.length > 0) {
-                            update_temp.forEach((item) => {
-                                this.msg.sendMessage(item.url);
-                            });
-                        }
 
                         this.updates_old = this.updates;
                         this.updates = [];
                     }
 
                     if (this.events.length > 0) {
-                        let event_temp = [];
-
                         compareLists({
                             left: this.events_old,
                             right: this.events,
                             compare: (left, right) => left.imgUrl.localeCompare(right.imgUrl),
-                            onMissingInLeft: (right) => event_temp.push(right)
+                            onMissingInLeft: (item) => {
+                                if (this.events.length > 0 && this.events_old.length > 0) {
+                                    this.msg.sendEmbedMessage(type, { url: item.url, imgUrl: item.imgUrl });
+                                }
+                            }
                         });
-
-                        if (this.events.length > 0 && this.events_old.length > 0 && event_temp.length > 0) {
-                            event_temp.forEach((item) => {
-                                this.msg.sendEmbedMessage(type, {url: item.url, imgUrl: item.imgUrl});
-                            });
-                        }
 
                         this.events_old = this.events;
                         this.events = [];
                     }
 
                     if (this.gm_magazines > 0) {
-                        let gm_magazines_temp = [];
-
                         compareLists({
                             left: this.gm_magazines_old,
                             right: this.gm_magazines,
                             compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (right) => gm_magazines_temp.push(right)
+                            onMissingInLeft: (item) => {
+                                if (this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0) {
+                                    this.msg.sendMessage(item.url);
+                                }
+                            }
                         });
-
-                        if (this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0 && gm_magazines_temp.length > 0) {
-                            gm_magazines_temp.forEach((item) => {
-                                this.msg.sendMessage(item.url);
-                            });
-                        }
 
                         this.gm_magazines_old = this.gm_magazines;
                         this.gm_magazines = [];
                     }
                 });
             }
-        }, 60000);
+        }, 30000);
     }
 
     /**
