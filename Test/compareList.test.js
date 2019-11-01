@@ -108,14 +108,10 @@ describe('A compare-lists lib tests', () => {
      */
     it('A real-type data', () => {
         // given
-        const left_items = [
-            { title: 'a', url: 'a' },
-            { title: 'b', url: 'b' },
-            { title: 'c', url: 'c' },
-            { title: 'd', url: 'd' },
-            { title: 'e', url: 'e' }
+        let left_items = [
+            { title: 'a', url: 'a' }
         ];
-        const right_items = [
+        let right_items = [
             { title: 'a', url: 'a' },
             { title: 'b', url: 'b' },
             { title: 'c', url: 'c' },
@@ -123,18 +119,29 @@ describe('A compare-lists lib tests', () => {
             { title: 'e', url: 'e' },
             { title: 'f', url: 'f' }
         ];
-        const expect = [{ title: 'f', url: 'f' }];
+        const left_expect = [
+            { title: 'a', url: 'a' },
+            { title: 'b', url: 'b' },
+            { title: 'c', url: 'c' },
+            { title: 'd', url: 'd' },
+            { title: 'e', url: 'e' },
+            { title: 'f', url: 'f' }
+        ];
+        const right_expect = [];
 
         // when
-        let actual = [];
         compareLists({
             left: left_items,
             right: right_items,
             compare: (left, right) => left.url.localeCompare(right.url),
-            onMissingInLeft: (right) => actual.push(right)
-        })
+            onMissingInLeft: (item) => console.error(item)
+        });
+
+        left_items = right_items;
+        right_items = [];
 
         // then
-        assert.deepEqual(actual, expect);
+        assert.deepEqual(left_items, left_expect);
+        assert.deepEqual(right_items, right_expect);
     });
 });
