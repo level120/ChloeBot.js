@@ -106,7 +106,7 @@ describe('A compare-lists lib tests', () => {
     /**
      * 현재 파싱형태 확인
      */
-    it('A real-type data', () => {
+    it('실제 파싱되어 메세지 보내는 형태', () => {
         // given
         let left_items = [
             { title: 'a', url: 'a' }
@@ -134,7 +134,11 @@ describe('A compare-lists lib tests', () => {
             left: left_items,
             right: right_items,
             compare: (left, right) => left.url.localeCompare(right.url),
-            onMissingInLeft: (item) => console.error(item)
+            onMissingInLeft: (item) => {
+                if (left_items.length > 0 && right_items.length > 0) {
+                    console.error(item);
+                }
+            }
         });
 
         left_items = right_items;
