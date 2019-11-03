@@ -17,7 +17,7 @@ export function registrationCommand(client) {
             const [cmd, title, ...description] = msg.content.split(' ');
             const embed = new RichEmbed()
                 .setTitle(title)
-                .setColor(0xFFD5D5)
+                .setColor(0xFFACAC)
                 .setDescription(description.join(' '));
 
             const message = new Message(client);
@@ -45,8 +45,8 @@ export function registrationCommand(client) {
             });
 
             const embed = new RichEmbed()
-                .setTitle("A registration guild list on the Chloe bot.")
-                .setColor(0xFFD5D5)
+                .setTitle(`${client.user.username}에 가입된 서버 목록. Count: ${client.guilds.size}`)
+                .setColor(0xFFACAC)
                 .setDescription(regList.join('\n'));
 
             msg.channel.send(embed);
