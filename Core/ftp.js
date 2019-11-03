@@ -29,7 +29,7 @@ function removeToken() {
 
 /**
  * ftp로부터 token 파일을 받은 후 name과 일치하는 파일의 값을 반환합니다
- * @param {string} name  url or path to filename
+ * @param {string} name url or path to filename
  */
 function connect(name) {
     return new Promise((done) => {
@@ -67,8 +67,8 @@ function downloadToken(name, callback) {
  * 만약 해당하는 값이 없다면 undefined 혹은 에러를 띄웁니다
  * @param {string} type bot type, [chloe, lovelyLily]
  * @param {function} callback token 값 반환
- * @throws type is undefined
- * @throws token file not found
+ * @throws when type is undefined
+ * @throws when token file not found
  */
 export default function (type, callback) {
     const name =
