@@ -20,7 +20,7 @@ export default class Message {
         const msgEmbed = new RichEmbed()
             .setTitle(msgObj.title)
             .setURL(msgObj.url)
-            .setColor(0xFF0000);
+            .setColor(0x93C54B);
 
         if (type === 'event') {
             msgEmbed.setImage(msgObj.imgUrl);
