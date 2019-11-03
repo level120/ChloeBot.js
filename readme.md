@@ -6,11 +6,13 @@
 
 실행 시 Docker 사용을 권장합니다.
 
+이때 `token`을 url로 받는 경우 [이곳](https://github.com/level120/ChloeBot.js/blob/master/Core/core.js#L30)을 변경해야 합니다.
+
 ### Usage
 
 ```sh
 $ sudo docker build --no-cache --tag chloe:latest Dockerfile
 $ sudo docker run -d --name chloebot chloe:latest
-$ sudo docker cp BOT_TOKEN chloebot:/ChloeBot.js
+$ sudo docker cp BOT_TOKEN chloebot:/ChloeBot.js  # token을 web에서 가져올 경우 생략가능
 $ sudo docker restart chloebot
 ```

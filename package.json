@@ -13,7 +13,9 @@
     "cheerio": "^1.0.0-rc.3",
     "compare-lists": "^1.0.9",
     "discord.js": "^11.5.1",
+    "ftp-client": "^0.2.2",
     "mocha": "^6.2.2",
+    "path": "^0.12.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "voca": "^1.4.0"

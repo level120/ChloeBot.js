@@ -1,6 +1,6 @@
 import { Client } from 'discord.js';
 import fs from 'fs';
-import request from 'request';
+import ftp from '../Core/ftp';
 import Soulworker from '../Service/soulworker'
 
 /**
@@ -25,11 +25,9 @@ export function run(client) {
         sw.monitoring(client);
     });
 
-    fs.readFile("bot.token", "utf8", (err, token) => {
+    fs.readFile('bot.token', 'utf8', (err, token) => {
         if (err) {
-            request('ftp://192.168.0.5/Bot.token', (err, res, body) => {
-                console.log(body);
-            });
+            ftp('lovelyLily', (webToken) => client.login(webToken));
         }
         else {
             client.login(token);
