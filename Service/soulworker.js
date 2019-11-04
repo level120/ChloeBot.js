@@ -131,7 +131,7 @@ export default class Soulworker {
                         this.events = [];
                     }
 
-                    if (this.gm_magazines > 0) {
+                    if (this.gm_magazines.length > 0) {
                         compareLists({
                             left: this.gm_magazines_old,
                             right: this.gm_magazines,
