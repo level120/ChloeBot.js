@@ -84,30 +84,25 @@ export default class Soulworker {
                     });
                 }).then(() => {
                     if (this.notices.length > 0) {
-                        compareLists({
-                            left: this.notices_old,
-                            right: this.notices,
-                            compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (item) => {
-                                if (this.notices.length > 0 && this.notices_old.length > 0) {
-                                    this.msg.sendMessage(item.url);
-                                }
+                        this.notices.forEach(item => {
+                            const res = this.notices_old.every(n => n.title !== item.title);
+                            if (res && this.notices.length > 0 && this.notices_old.length > 0) {
+                                console.log(`[notice] title: ${item.title},\turl: ${item.url}`);
+                                this.msg.sendMessage(item.url);
                             }
                         });
 
                         this.notices_old = this.notices;
                         this.notices = [];
+                        this.notices_old.splice(0, 1);
                     }
 
                     if (this.updates.length > 0) {
-                        compareLists({
-                            left: this.updates_old,
-                            right: this.updates,
-                            compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (item) => {
-                                if (this.updates.length > 0 && this.updates_old.length > 0) {
-                                    this.msg.sendMessage(item.url);
-                                }
+                        this.updates.forEach(item => {
+                            const res = this.updates_old.every(n => n.title !== item.title);
+                            if (res && this.updates.length > 0 && this.updates_old.length > 0) {
+                                console.log(`[update] title: ${item.title},\turl: ${item.url}`);
+                                this.msg.sendMessage(item.url);
                             }
                         });
 
@@ -116,14 +111,11 @@ export default class Soulworker {
                     }
 
                     if (this.events.length > 0) {
-                        compareLists({
-                            left: this.events_old,
-                            right: this.events,
-                            compare: (left, right) => left.imgUrl.localeCompare(right.imgUrl),
-                            onMissingInLeft: (item) => {
-                                if (this.events.length > 0 && this.events_old.length > 0) {
-                                    this.msg.sendEmbedMessage(type, { url: item.url, imgUrl: item.imgUrl });
-                                }
+                        this.events.forEach(item => {
+                            const res = this.events_old.every(n => n.title !== item.title);
+                            if (res && this.events.length > 0 && this.events_old.length > 0) {
+                                console.log(`[event] url: ${item.url},\t img url: ${item.imgUrl}`);
+                                this.msg.sendEmbedMessage(type, { url: item.url, imgUrl: item.imgUrl });
                             }
                         });
 
@@ -132,14 +124,11 @@ export default class Soulworker {
                     }
 
                     if (this.gm_magazines.length > 0) {
-                        compareLists({
-                            left: this.gm_magazines_old,
-                            right: this.gm_magazines,
-                            compare: (left, right) => left.url.localeCompare(right.url),
-                            onMissingInLeft: (item) => {
-                                if (this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0) {
-                                    this.msg.sendMessage(item.url);
-                                }
+                        this.gm_magazines.forEach(item => {
+                            const res = this.gm_magazines_old.every(n => n.title !== item.title);
+                            if (res && this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0) {
+                                console.log(`[gm magazine] title: ${item.title},\turl: ${item.url}`);
+                                this.msg.sendMessage(item.url);
                             }
                         });
 
