@@ -94,7 +94,6 @@ export default class Soulworker {
 
                         this.notices_old = this.notices;
                         this.notices = [];
-                        this.notices_old.splice(0, 1);
                     }
 
                     if (this.updates.length > 0) {
