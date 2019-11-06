@@ -113,8 +113,8 @@ export default class Soulworker {
                         this.events.forEach(item => {
                             const res = this.events_old.every(n => n.title !== item.title);
                             if (res && this.events.length > 0 && this.events_old.length > 0) {
-                                console.log(`[event] url: ${item.url},\t img url: ${item.imgUrl}`);
-                                this.msg.sendEmbedMessage(type, { url: item.url, imgUrl: item.imgUrl });
+                                console.log(`[event] title: ${item.title},\turl: ${item.url}`);
+                                this.msg.sendEmbedMessage(type, { title: item.title, url: item.url, imgUrl: item.imgUrl });
                             }
                         });
 
