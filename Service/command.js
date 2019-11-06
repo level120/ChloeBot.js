@@ -9,6 +9,39 @@ import Message from './message';
 export function registrationCommand(client) {
     const prefix = '!';
 
+    // bot이 가입될 때 보내는 메세지(이벤트)
+    client.on('guildCreate', guild => {
+        const embed = new RichEmbed()
+            .setTitle(`안녕하세요! ${client.user.username} 입니다! 반가워요~!`)
+            .setColor(0xFFACAC)
+            .setDescription('자세한 소개를 보려면 `!help`를 입력해주세요!');
+
+        let defaultChannel = '';
+
+        guild.channels.forEach((channel) => {
+            if (channel.type === 'text' && defaultChannel === '' && channel.permissionsFor(guild.me).has("SEND_MESSAGES")) {
+                defaultChannel = channel;
+            }
+        });
+
+        defaultChannel.send(embed);
+    });
+
+    client.on('message', msg => {
+        if (!msg.content.startsWith(prefix))
+            return;
+
+        if (msg.content.startsWith(prefix + 'help')) {
+            const embed = new RichEmbed()
+                .setTitle('소울워커의 새로운 게시글을 감시합니다!')
+                .setColor(0xFFACAC)
+                .setDescription('그 이외 다른 기능은 없습니다!')
+                .setImage('https://i.imgur.com/hsV3Tk1.png');
+
+            msg.channel.send(embed);
+        }
+    });
+
     client.on('message', msg => {
         if (!msg.content.startsWith(prefix))
             return;
