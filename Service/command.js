@@ -35,7 +35,7 @@ export function registrationCommand(client) {
             const embed = new RichEmbed()
                 .setTitle('소울워커의 새로운 게시글을 감시합니다!')
                 .setColor(0xFFACAC)
-                .setDescription('그 이외 다른 기능은 없습니다!')
+                .setDescription('그 이외 다른 기능은 없습니다!\n문의 및 버그제보는 여기로 주세요, jinheedo19@gmail.com')
                 .setImage('https://i.imgur.com/hsV3Tk1.png');
 
             msg.channel.send(embed);
