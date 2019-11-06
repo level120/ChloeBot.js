@@ -27,7 +27,7 @@ export function run(client) {
 
     fs.readFile('bot.token', 'utf8', (err, token) => {
         if (err) {
-            ftp('lovelyLily', (webToken) => client.login(webToken));
+            ftp('chloe', (webToken) => client.login(webToken));
         }
         else {
             client.login(token);
