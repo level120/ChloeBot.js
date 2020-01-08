@@ -43,8 +43,13 @@ export default class Message {
                 }
             });
 
-            defaultChannel.send(msg);
-            console.log(`${guild.name} - ${defaultChannel.name} is sended message`);
+            if (defaultChannel !== '') {
+                defaultChannel.send(msg);
+                console.log(`[Success] ${guild.name} - ${defaultChannel.name} is sended message`);
+            }
+            else {
+                console.log(`[Fail] ${guild.name} - Default channel not found, so the bot doesn't send message`);
+            }
         });
     }
 }

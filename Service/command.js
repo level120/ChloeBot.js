@@ -24,7 +24,8 @@ export function registrationCommand(client) {
             }
         });
 
-        defaultChannel.send(embed);
+        if (defaultChannel !== '')
+            defaultChannel.send(embed);
     });
 
     client.on('message', msg => {
