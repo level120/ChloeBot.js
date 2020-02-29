@@ -53,52 +53,57 @@ export default class Soulworker {
 
         return setInterval(() => {
             async.forEachOf(this.urls, (url, type) => {
-                request(url).then((html) => {
-                    const $ = cheerio.load(html);
-                    const context = this.getBoardSelector(type, $);
+                try {
+                    request(url).then((html) => {
+                        const $ = cheerio.load(html);
+                        const context = this.getBoardSelector(type, $);
 
-                    context.each((_, element) => {
-                        const data = this.getData(type, $, element);
+                        context.each((_, element) => {
+                            const data = this.getData(type, $, element);
 
-                        switch (type) {
-                            case 'notice':
-                                const isNewNotice = this.notices.every(n => n.title !== data.title);
-                                if (isNewNotice && this.notices.length > 0) {
-                                    console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
-                                    this.msg.sendMessage(data.url);
-                                    this.notices.push(data);
-                                }
-                                break;
+                            switch (type) {
+                                case 'notice':
+                                    const isNewNotice = this.notices.every(n => n.title !== data.title);
+                                    if (isNewNotice && this.notices.length > 0) {
+                                        console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
+                                        this.msg.sendMessage(data.url);
+                                        this.notices.push(data);
+                                    }
+                                    break;
 
-                            case 'update':
-                                const isNewUpdate = this.updates.every(n => n.title !== data.title);
-                                if (isNewUpdate && this.updates.length > 0) {
-                                    console.log(`[update] title: ${data.title},\turl: ${data.url}`);
-                                    this.msg.sendMessage(data.url);
-                                    this.updates.push(data);
-                                }
-                                break;
+                                case 'update':
+                                    const isNewUpdate = this.updates.every(n => n.title !== data.title);
+                                    if (isNewUpdate && this.updates.length > 0) {
+                                        console.log(`[update] title: ${data.title},\turl: ${data.url}`);
+                                        this.msg.sendMessage(data.url);
+                                        this.updates.push(data);
+                                    }
+                                    break;
 
-                            case 'event':
-                                const isNewEvent = this.events.every(n => n.title !== data.title);
-                                if (isNewEvent && this.events.length > 0) {
-                                    console.log(`[event] title: ${data.title},\turl: ${data.url}`);
-                                    this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
-                                    this.events.push(data);
-                                }
-                                break;
+                                case 'event':
+                                    const isNewEvent = this.events.every(n => n.title !== data.title);
+                                    if (isNewEvent && this.events.length > 0) {
+                                        console.log(`[event] title: ${data.title},\turl: ${data.url}`);
+                                        this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
+                                        this.events.push(data);
+                                    }
+                                    break;
 
-                            case 'gm_magazine':
-                                const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
-                                if (isNewGM && this.gm_magazines.length > 0) {
-                                    console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
-                                    this.msg.sendMessage(data.url);
-                                    this.gm_magazines.push(data);
-                                }
-                                break;
-                        }
-                    });
-                })
+                                case 'gm_magazine':
+                                    const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
+                                    if (isNewGM && this.gm_magazines.length > 0) {
+                                        console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
+                                        this.msg.sendMessage(data.url);
+                                        this.gm_magazines.push(data);
+                                    }
+                                    break;
+                            }
+                        });
+                    })
+                }
+                catch (err) {
+                    console.error(`[Success] Error Handler has detected\n${err}`);
+                }
             })
         }, 30000);
     }
