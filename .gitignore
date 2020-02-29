@@ -179,3 +179,7 @@ $RECYCLE.BIN/
 
 # Discord token
 *.token
+
+# This repo doesn't Fixed version for any packages.
+*.lock
+*-lock.json
