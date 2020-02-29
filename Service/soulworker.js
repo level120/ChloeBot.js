@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import cheerio from 'cheerio';
 import voca from 'voca';
-import { compareLists } from 'compare-lists';
+import async from 'async'
 import Message from './message';
 
 /**
@@ -9,15 +9,10 @@ import Message from './message';
  */
 export default class Soulworker {
     /**
-     * @param {Client} client Client class for discord.js 
+     * @param {Client} client Client class for discord.js
      */
     constructor(client) {
         this.client = client;
-
-        this.notices_old = [];
-        this.updates_old = [];
-        this.events_old = [];
-        this.gm_magazines_old = [];
 
         this.notices = [];
         this.updates = [];
@@ -57,9 +52,7 @@ export default class Soulworker {
         console.log(`Start monitoring on ${this.client.user.username}`);
 
         return setInterval(() => {
-            for (const type in this.urls) {
-                const url = this.urls[type];
-
+            async.forEachOf(this.urls, (url, type) => {
                 request(url).then((html) => {
                     const $ = cheerio.load(html);
                     const context = this.getBoardSelector(type, $);
@@ -69,79 +62,50 @@ export default class Soulworker {
 
                         switch (type) {
                             case 'notice':
-                                this.notices.push(data);
+                                const isNewNotice = this.notices.every(n => n.title !== data.title);
+                                if (isNewNotice && this.notices.length > 0) {
+                                    console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
+                                    this.msg.sendMessage(data.url);
+                                    this.notices.push(data);
+                                }
                                 break;
+
                             case 'update':
-                                this.updates.push(data);
+                                const isNewUpdate = this.updates.every(n => n.title !== data.title);
+                                if (isNewUpdate && this.updates.length > 0) {
+                                    console.log(`[update] title: ${data.title},\turl: ${data.url}`);
+                                    this.msg.sendMessage(data.url);
+                                    this.updates.push(data);
+                                }
                                 break;
+
                             case 'event':
-                                this.events.push(data);
+                                const isNewEvent = this.events.every(n => n.title !== data.title);
+                                if (isNewEvent && this.events.length > 0) {
+                                    console.log(`[event] title: ${data.title},\turl: ${data.url}`);
+                                    this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
+                                    this.events.push(data);
+                                }
                                 break;
+
                             case 'gm_magazine':
-                                this.gm_magazines.push(data);
+                                const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
+                                if (isNewGM && this.gm_magazines.length > 0) {
+                                    console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
+                                    this.msg.sendMessage(data.url);
+                                    this.gm_magazines.push(data);
+                                }
                                 break;
                         }
                     });
-                }).then(() => {
-                    if (this.notices.length > 0) {
-                        this.notices.forEach(item => {
-                            const res = this.notices_old.every(n => n.title !== item.title);
-                            if (res && this.notices.length > 0 && this.notices_old.length > 0) {
-                                console.log(`[notice] title: ${item.title},\turl: ${item.url}`);
-                                this.msg.sendMessage(item.url);
-                            }
-                        });
-
-                        this.notices_old = this.notices;
-                        this.notices = [];
-                    }
-
-                    if (this.updates.length > 0) {
-                        this.updates.forEach(item => {
-                            const res = this.updates_old.every(n => n.title !== item.title);
-                            if (res && this.updates.length > 0 && this.updates_old.length > 0) {
-                                console.log(`[update] title: ${item.title},\turl: ${item.url}`);
-                                this.msg.sendMessage(item.url);
-                            }
-                        });
-
-                        this.updates_old = this.updates;
-                        this.updates = [];
-                    }
-
-                    if (this.events.length > 0) {
-                        this.events.forEach(item => {
-                            const res = this.events_old.every(n => n.title !== item.title);
-                            if (res && this.events.length > 0 && this.events_old.length > 0) {
-                                console.log(`[event] title: ${item.title},\turl: ${item.url}`);
-                                this.msg.sendEmbedMessage(type, { title: item.title, url: item.url, imgUrl: item.imgUrl });
-                            }
-                        });
-
-                        this.events_old = this.events;
-                        this.events = [];
-                    }
-
-                    if (this.gm_magazines.length > 0) {
-                        this.gm_magazines.forEach(item => {
-                            const res = this.gm_magazines_old.every(n => n.title !== item.title);
-                            if (res && this.gm_magazines.length > 0 && this.gm_magazines_old.length > 0) {
-                                console.log(`[gm magazine] title: ${item.title},\turl: ${item.url}`);
-                                this.msg.sendMessage(item.url);
-                            }
-                        });
-
-                        this.gm_magazines_old = this.gm_magazines;
-                        this.gm_magazines = [];
-                    }
-                });
-            }
+                })
+            })
         }, 30000);
     }
 
     /**
      * 게시글 타입에 맞는 selector를 반환합니다
-     * @param {string} type board type 
+     * @param {string} type board type
      * @returns selector
      */
     getBoardSelector(type, $) {
@@ -153,7 +117,7 @@ export default class Soulworker {
 
     /**
      * 게시글 타입에 맞는 데이터를 반환합니다
-     * @param {string} type board type 
+     * @param {string} type board type
      * @returns parsing 된 데이터
      */
     getData(type, $, element) {

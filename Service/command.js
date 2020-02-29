@@ -26,6 +26,12 @@ export function registrationCommand(client) {
 
         if (defaultChannel !== '')
             defaultChannel.send(embed);
+
+        console.log(`[Registered] ${guild.name} - ${defaultChannel.name}`);
+    });
+
+    client.on('guildDelete', guild => {
+        console.log(`[Terminated] ${guild.name}`);
     });
 
     client.on('message', msg => {
