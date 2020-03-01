@@ -139,25 +139,25 @@ export default class Soulworker {
                         // set condition for initialization
                         if (!this.initialized[type]) {
                             this.initialized[type] = true;
-                        }
 
-                        // 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록
-                        switch (type) {
-                            case 'notice':
-                                this.notices.reverse();
-                                break;
+                            // 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록
+                            switch (type) {
+                                case 'notice':
+                                    this.notices.reverse();
+                                    break;
 
-                            case 'update':
-                                this.updates.reverse();
-                                break;
+                                case 'update':
+                                    this.updates.reverse();
+                                    break;
 
-                            case 'event':
-                                this.events.reverse();
-                                break;
+                                case 'event':
+                                    this.events.reverse();
+                                    break;
 
-                            case 'gm_magazine':
-                                this.gm_magazines.reverse();
-                                break;
+                                case 'gm_magazine':
+                                    this.gm_magazines.reverse();
+                                    break;
+                            }
                         }
                     });
                 }
