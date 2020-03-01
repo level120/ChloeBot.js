@@ -19,6 +19,7 @@ export default class Soulworker {
             gm_magazine: false
         };
 
+        this.max_count = 30;
         this.client = client;
 
         this.notices = [];
@@ -78,6 +79,10 @@ export default class Soulworker {
                                     }
                                     else if (!this.initialized[type]) {
                                         this.notices.push(data);
+
+                                        if (this.notices.length > this.max_count) {
+                                            this.notices.splice(0, (this.notices.length - this.max_count));
+                                        }
                                     }
                                     break;
 
@@ -90,6 +95,10 @@ export default class Soulworker {
                                     }
                                     else if (!this.initialized[type]) {
                                         this.updates.push(data);
+
+                                        if (this.updates.length > this.max_count) {
+                                            this.updates.splice(0, (this.updates.length - this.max_count));
+                                        }
                                     }
                                     break;
 
@@ -102,6 +111,10 @@ export default class Soulworker {
                                     }
                                     else if (!this.initialized[type]) {
                                         this.events.push(data);
+
+                                        if (this.events.length > this.max_count) {
+                                            this.events.splice(0, (this.events.length - this.max_count));
+                                        }
                                     }
                                     break;
 
@@ -114,13 +127,38 @@ export default class Soulworker {
                                     }
                                     else if (!this.initialized[type]) {
                                         this.gm_magazines.push(data);
+
+                                        if (this.gm_magazines.length > this.max_count) {
+                                            this.gm_magazines.splice(0, (this.gm_magazines.length - this.max_count));
+                                        }
                                     }
                                     break;
                             }
                         });
                     }).then(() => {
                         // set condition for initialization
-                        this.initialized[type] = true;
+                        if (!this.initialized[type]) {
+                            this.initialized[type] = true;
+                        }
+
+                        // 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록
+                        switch (type) {
+                            case 'notice':
+                                this.notices.reverse();
+                                break;
+
+                            case 'update':
+                                this.updates.reverse();
+                                break;
+
+                            case 'event':
+                                this.events.reverse();
+                                break;
+
+                            case 'gm_magazine':
+                                this.gm_magazines.reverse();
+                                break;
+                        }
                     });
                 }
                 catch (err) {
