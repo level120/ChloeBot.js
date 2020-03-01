@@ -12,6 +12,13 @@ export default class Soulworker {
      * @param {Client} client Client class for discord.js
      */
     constructor(client) {
+        this.initialized = {
+            notice: false,
+            update: false,
+            event: false,
+            gm_magazine: false
+        };
+
         this.client = client;
 
         this.notices = [];
@@ -42,7 +49,7 @@ export default class Soulworker {
             update: 'http://soulworker.game.onstove.com/Update/List',
             event: 'http://soulworker.game.onstove.com/Event/List',
             gm_magazine: 'http://soulworker.game.onstove.com/GMMagazine/List'
-        }
+        };
     }
 
     /**
@@ -51,8 +58,8 @@ export default class Soulworker {
     monitoring() {
         console.log(`Start monitoring on ${this.client.user.username}`);
 
-        return setInterval(() => {
-            async.forEachOf(this.urls, (url, type) => {
+        return setInterval(async () => {
+            await async.forEachOf(this.urls, (url, type) => {
                 try {
                     request(url).then((html) => {
                         const $ = cheerio.load(html);
@@ -64,47 +71,66 @@ export default class Soulworker {
                             switch (type) {
                                 case 'notice':
                                     const isNewNotice = this.notices.every(n => n.title !== data.title);
-                                    if (isNewNotice && this.notices.length > 0) {
+                                    console.log(`[notice] ${this.notices.length} - ${data.title}`);
+                                    if (isNewNotice && this.initialized[type]) {
                                         console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
+                                        this.notices.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
                                         this.notices.push(data);
                                     }
                                     break;
 
                                 case 'update':
                                     const isNewUpdate = this.updates.every(n => n.title !== data.title);
-                                    if (isNewUpdate && this.updates.length > 0) {
+                                    console.log(`[updates] ${this.updates.length} - ${data.title}`);
+                                    if (isNewUpdate && this.initialized[type]) {
                                         console.log(`[update] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
+                                        this.updates.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
                                         this.updates.push(data);
                                     }
                                     break;
 
                                 case 'event':
                                     const isNewEvent = this.events.every(n => n.title !== data.title);
-                                    if (isNewEvent && this.events.length > 0) {
+                                    console.log(`[events] ${this.events.length} - ${data.title}`);
+                                    if (isNewEvent && this.initialized[type]) {
                                         console.log(`[event] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
+                                        this.events.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
                                         this.events.push(data);
                                     }
                                     break;
 
                                 case 'gm_magazine':
                                     const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
-                                    if (isNewGM && this.gm_magazines.length > 0) {
+                                    console.log(`[gm_magazines] ${this.gm_magazines.length} - ${data.title}`);
+                                    if (isNewGM && this.initialized[type]) {
                                         console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
+                                        this.gm_magazines.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
                                         this.gm_magazines.push(data);
                                     }
                                     break;
                             }
                         });
-                    })
+                    }).then(() => {
+                        // set condition for initialization
+                        this.initialized[type] = true;
+                    });
                 }
                 catch (err) {
-                    console.error(`[Success] Error Handler has detected\n${err}`);
+                    console.error(`[Exception] Error Handler has detected\n${err}`);
                 }
-            })
+            });
         }, 30000);
     }
 
