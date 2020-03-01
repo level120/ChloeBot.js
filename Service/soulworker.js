@@ -12,6 +12,14 @@ export default class Soulworker {
      * @param {Client} client Client class for discord.js
      */
     constructor(client) {
+        this.initialized = {
+            notice: false,
+            update: false,
+            event: false,
+            gm_magazine: false
+        };
+
+        this.max_count = 30;
         this.client = client;
 
         this.notices = [];
@@ -42,7 +50,7 @@ export default class Soulworker {
             update: 'http://soulworker.game.onstove.com/Update/List',
             event: 'http://soulworker.game.onstove.com/Event/List',
             gm_magazine: 'http://soulworker.game.onstove.com/GMMagazine/List'
-        }
+        };
     }
 
     /**
@@ -51,8 +59,8 @@ export default class Soulworker {
     monitoring() {
         console.log(`Start monitoring on ${this.client.user.username}`);
 
-        return setInterval(() => {
-            async.forEachOf(this.urls, (url, type) => {
+        return setInterval(async () => {
+            await async.forEachOf(this.urls, (url, type) => {
                 try {
                     request(url).then((html) => {
                         const $ = cheerio.load(html);
@@ -64,47 +72,99 @@ export default class Soulworker {
                             switch (type) {
                                 case 'notice':
                                     const isNewNotice = this.notices.every(n => n.title !== data.title);
-                                    if (isNewNotice && this.notices.length > 0) {
+                                    if (isNewNotice && this.initialized[type]) {
                                         console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.notices.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.notices.push(data);
+
+                                        if (this.notices.length > this.max_count) {
+                                            this.notices.splice(0, (this.notices.length - this.max_count));
+                                        }
                                     }
                                     break;
 
                                 case 'update':
                                     const isNewUpdate = this.updates.every(n => n.title !== data.title);
-                                    if (isNewUpdate && this.updates.length > 0) {
+                                    if (isNewUpdate && this.initialized[type]) {
                                         console.log(`[update] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.updates.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.updates.push(data);
+
+                                        if (this.updates.length > this.max_count) {
+                                            this.updates.splice(0, (this.updates.length - this.max_count));
+                                        }
                                     }
                                     break;
 
                                 case 'event':
                                     const isNewEvent = this.events.every(n => n.title !== data.title);
-                                    if (isNewEvent && this.events.length > 0) {
+                                    if (isNewEvent && this.initialized[type]) {
                                         console.log(`[event] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
                                         this.events.push(data);
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.events.push(data);
+
+                                        if (this.events.length > this.max_count) {
+                                            this.events.splice(0, (this.events.length - this.max_count));
+                                        }
                                     }
                                     break;
 
                                 case 'gm_magazine':
                                     const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
-                                    if (isNewGM && this.gm_magazines.length > 0) {
+                                    if (isNewGM && this.initialized[type]) {
                                         console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.gm_magazines.push(data);
                                     }
+                                    else if (!this.initialized[type]) {
+                                        this.gm_magazines.push(data);
+
+                                        if (this.gm_magazines.length > this.max_count) {
+                                            this.gm_magazines.splice(0, (this.gm_magazines.length - this.max_count));
+                                        }
+                                    }
                                     break;
                             }
                         });
-                    })
+                    }).then(() => {
+                        // set condition for initialization
+                        if (!this.initialized[type]) {
+                            this.initialized[type] = true;
+                        }
+
+                        // 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록
+                        switch (type) {
+                            case 'notice':
+                                this.notices.reverse();
+                                break;
+
+                            case 'update':
+                                this.updates.reverse();
+                                break;
+
+                            case 'event':
+                                this.events.reverse();
+                                break;
+
+                            case 'gm_magazine':
+                                this.gm_magazines.reverse();
+                                break;
+                        }
+                    });
                 }
                 catch (err) {
-                    console.error(`[Success] Error Handler has detected\n${err}`);
+                    console.error(`[Exception] Error Handler has detected\n${err}`);
                 }
-            })
+            });
         }, 30000);
     }
 
