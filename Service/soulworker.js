@@ -71,7 +71,6 @@ export default class Soulworker {
                             switch (type) {
                                 case 'notice':
                                     const isNewNotice = this.notices.every(n => n.title !== data.title);
-                                    console.log(`[notice] ${this.notices.length} - ${data.title}`);
                                     if (isNewNotice && this.initialized[type]) {
                                         console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
@@ -84,7 +83,6 @@ export default class Soulworker {
 
                                 case 'update':
                                     const isNewUpdate = this.updates.every(n => n.title !== data.title);
-                                    console.log(`[updates] ${this.updates.length} - ${data.title}`);
                                     if (isNewUpdate && this.initialized[type]) {
                                         console.log(`[update] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
@@ -97,7 +95,6 @@ export default class Soulworker {
 
                                 case 'event':
                                     const isNewEvent = this.events.every(n => n.title !== data.title);
-                                    console.log(`[events] ${this.events.length} - ${data.title}`);
                                     if (isNewEvent && this.initialized[type]) {
                                         console.log(`[event] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
@@ -110,7 +107,6 @@ export default class Soulworker {
 
                                 case 'gm_magazine':
                                     const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
-                                    console.log(`[gm_magazines] ${this.gm_magazines.length} - ${data.title}`);
                                     if (isNewGM && this.initialized[type]) {
                                         console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
