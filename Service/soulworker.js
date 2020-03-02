@@ -19,7 +19,7 @@ export default class Soulworker {
             gm_magazine: false
         };
 
-        this.max_count = 30;
+        this.max_count = 50;
         this.client = client;
 
         this.notices = [];
@@ -76,13 +76,13 @@ export default class Soulworker {
                                         console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.notices.push(data);
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.notices.push(data);
 
                                         if (this.notices.length > this.max_count) {
                                             this.notices.splice(0, (this.notices.length - this.max_count));
                                         }
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.notices.push(data);
                                     }
                                     break;
 
@@ -92,13 +92,13 @@ export default class Soulworker {
                                         console.log(`[update] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.updates.push(data);
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.updates.push(data);
 
                                         if (this.updates.length > this.max_count) {
                                             this.updates.splice(0, (this.updates.length - this.max_count));
                                         }
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.updates.push(data);
                                     }
                                     break;
 
@@ -108,13 +108,13 @@ export default class Soulworker {
                                         console.log(`[event] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
                                         this.events.push(data);
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.events.push(data);
 
                                         if (this.events.length > this.max_count) {
                                             this.events.splice(0, (this.events.length - this.max_count));
                                         }
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.events.push(data);
                                     }
                                     break;
 
@@ -124,13 +124,13 @@ export default class Soulworker {
                                         console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
                                         this.msg.sendMessage(data.url);
                                         this.gm_magazines.push(data);
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.gm_magazines.push(data);
 
                                         if (this.gm_magazines.length > this.max_count) {
                                             this.gm_magazines.splice(0, (this.gm_magazines.length - this.max_count));
                                         }
+                                    }
+                                    else if (!this.initialized[type]) {
+                                        this.gm_magazines.push(data);
                                     }
                                     break;
                             }
