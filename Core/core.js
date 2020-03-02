@@ -6,7 +6,7 @@ import Soulworker from '../Service/soulworker'
 /**
  * singleton으로 사용하는 bot client 입니다
  */
-export const client = new Client();
+const client = new Client();
 const sw = new Soulworker(client);
 
 /**
@@ -15,7 +15,7 @@ const sw = new Soulworker(client);
  * @exception { FileNotFound } Bot token 파일을 찾지 못한 경우입니다
  * @exception { ArgumentException } Bot token이 올바르지 않은 경우입니다
  */
-export function run(client) {
+export default function run(callback) {
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}!`);
 
@@ -32,5 +32,6 @@ export function run(client) {
         else {
             client.login(token);
         }
+        callback(client);
     });
 }

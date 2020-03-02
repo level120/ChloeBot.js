@@ -1,18 +1,37 @@
 # ChloeBot.js
 
-이 repo는 `discord.net`을 이용해 만든 `ChloeBot.net`가 원인을 알 수 없는 소켓에러로 정상 동작이 불가해 마이그레이션 용도로 작성했습니다.
+This is a notification bot for the Soulworker(KR) when official site update by new post.
 
-이곳에서는 `ChloeBot.net`에서 제공한 일반 사용자용 명령어를 제공하지 않습니다.
+* Crawling time: 30s
+* Target site: <https://soulworker.game.onstove.com>
+* Target board: Notice, Update, Event, GM Magazine
 
-실행 시 Docker 사용을 권장합니다.
+---
 
-이때 `token`을 url로 받는 경우 [이곳](https://github.com/level120/ChloeBot.js/blob/master/Core/core.js#L30)을 변경해야 합니다.
+# Local Machine
+
+* It need a Node 10 or newer(Dockerfile used with v12).
+* Install a `yarn` package manager.
+* `yarn install` and `npm start` to run.
+
+---
+
+# Docker Container
+
+This dockerfile automatically run when container starting.
+
+So it need `bot.token` file to run, this provide two method to set token.
+
+1. When use web: Please [change this](https://github.com/level120/ChloeBot.js/blob/master/Core/core.js#L30), replace ftp to web download.
+2. When use ftp: Please [change this](https://github.com/level120/ChloeBot.js/blob/master/Core/ftp.js#L6), ip address, port and others).
+
+! Token file don't contains any carriage return or white space.
 
 ### Usage
 
 ```sh
-$ sudo docker build --no-cache --tag chloe:latest Dockerfile
-$ sudo docker run -d --name chloebot chloe:latest
-$ sudo docker cp BOT_TOKEN chloebot:/ChloeBot.js  # token을 web에서 가져올 경우 생략가능
+$ sudo docker build --no-cache --tag chloe:latest Dockerfile # Build dockerfile
+$ sudo docker run -d --name chloebot chloe:latest # Container creation and running
+$ sudo docker cp bot.token chloebot:/ChloeBot.js  # Setting token for discord
 $ sudo docker restart chloebot
 ```

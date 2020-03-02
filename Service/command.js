@@ -6,7 +6,7 @@ import Message from './message';
  * 일반 사용자용 명령어 집합은 등록하지 않습니다
  * @param { CLient } client class in discord.js
  */
-export function registrationCommand(client) {
+export default function registrationCommand(client) {
     const prefix = '!';
 
     // bot이 가입될 때 보내는 메세지(이벤트)

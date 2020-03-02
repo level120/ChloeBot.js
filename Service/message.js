@@ -1,11 +1,11 @@
 import { RichEmbed } from 'discord.js';
 
 /**
- * 전체 서버에 message를 보내는 것을 담당합니다 
+ * 전체 서버에 message를 보내는 것을 담당합니다
  */
 export default class Message {
     /**
-     * @param {Client} client Client class for discord.js 
+     * @param {Client} client Client class for discord.js
      */
     constructor(client) {
         this.client = client;
