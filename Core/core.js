@@ -20,7 +20,7 @@ export default function run(callback) {
         console.log(`Logged in as ${client.user.tag}!`);
 
         client.user.setActivity('Soulworker', { type: 'PLAYING' });
-        console.log(`Set activity on ${client.user.username}`);
+        console.log(`Set activity to ${client.user.username}`);
 
         sw.monitoring(client);
     });

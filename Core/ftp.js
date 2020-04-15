@@ -80,7 +80,7 @@ export default function (type, callback) {
 
     downloadToken(name, (token) => {
         if (token == undefined)
-            throw 'Couldn\'t not download or read a token file';
+            throw 'Couldn\'t download or read a token file';
 
         callback(token);
     });
