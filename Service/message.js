@@ -45,7 +45,7 @@ export default class Message {
 
             if (defaultChannel !== '') {
                 defaultChannel.send(msg);
-                console.log(`[Success] ${guild.name} - ${defaultChannel.name} is sended message`);
+                console.log(`[Success] ${guild.name} - ${defaultChannel.name} is sent message`);
             }
             else {
                 console.log(`[Fail] ${guild.name} - Default channel not found, so the bot doesn't send message`);

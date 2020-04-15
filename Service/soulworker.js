@@ -162,7 +162,7 @@ export default class Soulworker {
                     });
                 }
                 catch (err) {
-                    console.error(`[Exception] Error Handler has detected\n${err}`);
+                    console.error(`[Exception] Throwing error by handler\n${err}`);
                 }
             });
         }, 30000);
