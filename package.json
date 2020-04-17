@@ -1,6 +1,6 @@
 {
   "name": "ChloeBot.js",
-  "version": "1.2",
+  "version": "1.2.0",
   "description": "Discord bot for soulworker kr",
   "main": "index.js",
   "author": "Chenny",
