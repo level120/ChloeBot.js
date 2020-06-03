@@ -20,7 +20,7 @@ export default class Soulworker {
         };
 
         this.max_count = 50;
-        this.time_interval = 3000;
+        this.time_interval = 30000;
         this.client = client;
 
         this.notices = [];
@@ -62,50 +62,21 @@ export default class Soulworker {
 
         return setInterval(() => {
             async.forEachOf(this.urls, (url, type) => {
-                console.log(`url: ${url}, type: ${type}`);
                 axios.get(url)
-                    .then((response) => this.parse(response.data, type))
-                    .then(this.reverseData(type))
-                    .then(this.debugPrint(type))
+                    .then((response) => this.process(response.data, type))
                     .catch((err) => console.error(`[Exception] Throwing error by handler\n${err}`));
             });
         }, this.time_interval);
     }
 
-    debugPrint(type) {
-        switch (type) {
-            case 'notice':
-                async.forEachOf(this.notices, item => {
-                    this.debugPrint(type, item);
-                });
-                break;
-
-            case 'update':
-                async.forEachOf(this.updates, item => {
-                    this.debugPrint(type, item);
-                });
-                break;
-
-            case 'event':
-                async.forEachOf(this.events, item => {
-                    this.debugPrint(type, item);
-                });
-                break;
-
-            case 'gm_magazine':
-                async.forEachOf(this.gm_magazines, item => {
-                    this.debugPrint(type, item);
-                });
-                break;
-
-            default:
-                console.error(`Not found type: ${type}`);
-                break;
-        }
-    }
-
-    debugPrintItem(type, item) {
-        console.log(`[${type}] ${item}`);
+    process(html, type) {
+        async.series([
+            (callback) => {
+                this.parse(html, type);
+                callback(null, '');
+            },
+            () => this.reverseData(type)
+        ]);
     }
 
     /**
@@ -113,7 +84,6 @@ export default class Soulworker {
      * @param {*} html html tag
      */
     parse(html, type) {
-        console.log(`Enter parse: ${type}`);
         const $ = cheerio.load(html);
         const context = this.getBoardSelector(type, $);
 
@@ -195,7 +165,6 @@ export default class Soulworker {
     reverseData(type) {
         // set condition for initialization
         if (!this.initialized[type]) {
-            console.log(`initialization done: ${type}`);
             this.initialized[type] = true;
 
             switch (type) {
