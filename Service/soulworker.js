@@ -1,8 +1,8 @@
-import request from 'request-promise';
 import cheerio from 'cheerio';
 import voca from 'voca';
 import async from 'async'
 import Message from './message';
+import axios from 'axios'
 
 /**
  * Soulworker KR의 모니터링을 담당합니다
@@ -20,6 +20,7 @@ export default class Soulworker {
         };
 
         this.max_count = 50;
+        this.time_interval = 3000;
         this.client = client;
 
         this.notices = [];
@@ -59,113 +60,162 @@ export default class Soulworker {
     monitoring() {
         console.log(`Start monitoring on ${this.client.user.username}`);
 
-        return setInterval(async () => {
-            await async.forEachOf(this.urls, (url, type) => {
-                try {
-                    request(url).then((html) => {
-                        const $ = cheerio.load(html);
-                        const context = this.getBoardSelector(type, $);
-
-                        context.each((_, element) => {
-                            const data = this.getData(type, $, element);
-
-                            switch (type) {
-                                case 'notice':
-                                    const isNewNotice = this.notices.every(n => n.title !== data.title);
-                                    if (isNewNotice && this.initialized[type]) {
-                                        console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
-                                        this.msg.sendMessage(data.url);
-                                        this.notices.push(data);
-
-                                        if (this.notices.length > this.max_count) {
-                                            this.notices.splice(0, (this.notices.length - this.max_count));
-                                        }
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.notices.push(data);
-                                    }
-                                    break;
-
-                                case 'update':
-                                    const isNewUpdate = this.updates.every(n => n.title !== data.title);
-                                    if (isNewUpdate && this.initialized[type]) {
-                                        console.log(`[update] title: ${data.title},\turl: ${data.url}`);
-                                        this.msg.sendMessage(data.url);
-                                        this.updates.push(data);
-
-                                        if (this.updates.length > this.max_count) {
-                                            this.updates.splice(0, (this.updates.length - this.max_count));
-                                        }
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.updates.push(data);
-                                    }
-                                    break;
-
-                                case 'event':
-                                    const isNewEvent = this.events.every(n => n.title !== data.title);
-                                    if (isNewEvent && this.initialized[type]) {
-                                        console.log(`[event] title: ${data.title},\turl: ${data.url}`);
-                                        this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
-                                        this.events.push(data);
-
-                                        if (this.events.length > this.max_count) {
-                                            this.events.splice(0, (this.events.length - this.max_count));
-                                        }
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.events.push(data);
-                                    }
-                                    break;
-
-                                case 'gm_magazine':
-                                    const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
-                                    if (isNewGM && this.initialized[type]) {
-                                        console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
-                                        this.msg.sendMessage(data.url);
-                                        this.gm_magazines.push(data);
-
-                                        if (this.gm_magazines.length > this.max_count) {
-                                            this.gm_magazines.splice(0, (this.gm_magazines.length - this.max_count));
-                                        }
-                                    }
-                                    else if (!this.initialized[type]) {
-                                        this.gm_magazines.push(data);
-                                    }
-                                    break;
-                            }
-                        });
-                    }).then(() => {
-                        // set condition for initialization
-                        if (!this.initialized[type]) {
-                            this.initialized[type] = true;
-
-                            // 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록
-                            switch (type) {
-                                case 'notice':
-                                    this.notices.reverse();
-                                    break;
-
-                                case 'update':
-                                    this.updates.reverse();
-                                    break;
-
-                                case 'event':
-                                    this.events.reverse();
-                                    break;
-
-                                case 'gm_magazine':
-                                    this.gm_magazines.reverse();
-                                    break;
-                            }
-                        }
-                    });
-                }
-                catch (err) {
-                    console.error(`[Exception] Throwing error by handler\n${err}`);
-                }
+        return setInterval(() => {
+            async.forEachOf(this.urls, (url, type) => {
+                console.log(`url: ${url}, type: ${type}`);
+                axios.get(url)
+                    .then((response) => this.parse(response.data, type))
+                    .then(this.reverseData(type))
+                    .then(this.debugPrint(type))
+                    .catch((err) => console.error(`[Exception] Throwing error by handler\n${err}`));
             });
-        }, 30000);
+        }, this.time_interval);
+    }
+
+    debugPrint(type) {
+        switch (type) {
+            case 'notice':
+                async.forEachOf(this.notices, item => {
+                    this.debugPrint(type, item);
+                });
+                break;
+
+            case 'update':
+                async.forEachOf(this.updates, item => {
+                    this.debugPrint(type, item);
+                });
+                break;
+
+            case 'event':
+                async.forEachOf(this.events, item => {
+                    this.debugPrint(type, item);
+                });
+                break;
+
+            case 'gm_magazine':
+                async.forEachOf(this.gm_magazines, item => {
+                    this.debugPrint(type, item);
+                });
+                break;
+
+            default:
+                console.error(`Not found type: ${type}`);
+                break;
+        }
+    }
+
+    debugPrintItem(type, item) {
+        console.log(`[${type}] ${item}`);
+    }
+
+    /**
+     * html 태그를 이용해 데이터를 parse 합니다.
+     * @param {*} html html tag
+     */
+    parse(html, type) {
+        console.log(`Enter parse: ${type}`);
+        const $ = cheerio.load(html);
+        const context = this.getBoardSelector(type, $);
+
+        context.each((_, element) => {
+            const data = this.getData(type, $, element);
+
+            switch (type) {
+                case 'notice':
+                    const isNewNotice = this.notices.every(n => n.title !== data.title);
+                    if (isNewNotice && this.initialized[type]) {
+                        console.log(`[notice] title: ${data.title},\turl: ${data.url}`);
+                        this.msg.sendMessage(data.url);
+                        this.notices.push(data);
+
+                        if (this.notices.length > this.max_count) {
+                            this.notices.splice(0, (this.notices.length - this.max_count));
+                        }
+                    }
+                    else if (!this.initialized[type]) {
+                        this.notices.push(data);
+                    }
+                    break;
+
+                case 'update':
+                    const isNewUpdate = this.updates.every(n => n.title !== data.title);
+                    if (isNewUpdate && this.initialized[type]) {
+                        console.log(`[update] title: ${data.title},\turl: ${data.url}`);
+                        this.msg.sendMessage(data.url);
+                        this.updates.push(data);
+
+                        if (this.updates.length > this.max_count) {
+                            this.updates.splice(0, (this.updates.length - this.max_count));
+                        }
+                    }
+                    else if (!this.initialized[type]) {
+                        this.updates.push(data);
+                    }
+                    break;
+
+                case 'event':
+                    const isNewEvent = this.events.every(n => n.title !== data.title);
+                    if (isNewEvent && this.initialized[type]) {
+                        console.log(`[event] title: ${data.title},\turl: ${data.url}`);
+                        this.msg.sendEmbedMessage(type, { title: data.title, url: data.url, imgUrl: data.imgUrl });
+                        this.events.push(data);
+
+                        if (this.events.length > this.max_count) {
+                            this.events.splice(0, (this.events.length - this.max_count));
+                        }
+                    }
+                    else if (!this.initialized[type]) {
+                        this.events.push(data);
+                    }
+                    break;
+
+                case 'gm_magazine':
+                    const isNewGM = this.gm_magazines.every(n => n.title !== data.title);
+                    if (isNewGM && this.initialized[type]) {
+                        console.log(`[gm magazine] title: ${data.title},\turl: ${data.url}`);
+                        this.msg.sendMessage(data.url);
+                        this.gm_magazines.push(data);
+
+                        if (this.gm_magazines.length > this.max_count) {
+                            this.gm_magazines.splice(0, (this.gm_magazines.length - this.max_count));
+                        }
+                    }
+                    else if (!this.initialized[type]) {
+                        this.gm_magazines.push(data);
+                    }
+                    break;
+            }
+        });
+    }
+
+    /**
+     * 첫 크롤러 동작 시 최신글이 맨 마지막에 배치되도록 만드는 작업
+     * @param {string} type list 구분자
+     */
+    reverseData(type) {
+        // set condition for initialization
+        if (!this.initialized[type]) {
+            console.log(`initialization done: ${type}`);
+            this.initialized[type] = true;
+
+            switch (type) {
+                case 'notice':
+                    this.notices.reverse();
+                    break;
+
+                case 'update':
+                    this.updates.reverse();
+                    break;
+
+                case 'event':
+                    this.events.reverse();
+                    break;
+
+                case 'gm_magazine':
+                    this.gm_magazines.reverse();
+                    break;
+            }
+        }
     }
 
     /**
