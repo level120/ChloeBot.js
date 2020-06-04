@@ -1,7 +1,7 @@
 {
   "name": "ChloeBot.js",
-  "version": "1.2.1",
-  "description": "Discord bot for soulworker kr",
+  "version": "1.3.0",
+  "description": "It Notifies when a new post uploaded from the SoulWorker KR website",
   "main": "index.js",
   "author": "Chenny",
   "license": "MIT",
