@@ -215,7 +215,7 @@ export default class Soulworker {
         if (type === 'event') {
             return {
                 title: voca.trim($(element).find('div.t-subject a span').text()),
-                imgUrl: 'http:' + $(element).find('div.thumb a img').attr('src'),
+                imgUrl: $(element).find('div.thumb a img').attr('src'),
                 url: this.eventUrl
             };
         }
