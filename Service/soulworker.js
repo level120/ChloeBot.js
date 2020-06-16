@@ -60,9 +60,9 @@ export default class Soulworker {
     monitoring() {
         console.log(`Start monitoring on ${this.client.user.username}`);
 
-        return setInterval(() => {
-            async.forEachOf(this.urls, (url, type) => {
-                axios.get(url)
+        return setInterval(async () => {
+            await async.forEachOf(this.urls, async (url, type) => {
+                await axios.get(url)
                     .then((response) => this.process(response.data, type))
                     .catch((err) => console.error(`[Exception] Throwing error by handler\n${err}`));
             });
