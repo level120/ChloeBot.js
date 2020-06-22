@@ -25,6 +25,8 @@ export default function run(callback) {
         sw.monitoring(client);
     });
 
+    client.on('error', console.error);
+
     fs.readFile('bot.token', 'utf8', (err, token) => {
         if (err) {
             ftp('chloe', (webToken) => client.login(webToken));
